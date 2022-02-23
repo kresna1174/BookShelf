@@ -1,238 +1,210 @@
+const INCOMPLETE_BOOK = "unreadBook";
+const COMPLETE_BOOK = "readedBook";
+const BOOKS_KEY = "APPLICATION_BOOKSHELF";
+let books = [];
+document.addEventListener("DOMContentLoaded", function () {
+    const book = document.getElementById("formAddBook");
+    const searchBook = document.getElementById("formSearch");
 
-window.addEventListener('DOMContentLoaded', (event) => {
-    test();
+    book.addEventListener("submit", function (event) {
+        event.preventDefault();
+        addBook();
+
+        document.getElementById("formInputJudul").value = "";
+        document.getElementById("formInputAuthorBook").value = "";
+        document.getElementById("formInputYearBook").value = "";
+        document.getElementById("formInputIsDone").checked = false;
+    });
+
+    searchBook.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const inputSearch = document.getElementById("formInputSearch").value;
+        const filter = inputSearch.toUpperCase();
+        const titles = document.getElementsByTagName("h5");
+
+        for (let i = 0; i < titles.length; i++) {
+            const titlesText = titles[i].textContent || titles[i].innerText;
+
+            if (titlesText.toUpperCase().indexOf(filter) > -1) {
+                titles[i].closest(".card").style.display = "";
+            } else {
+                titles[i].closest(".card").style.display = "none";
+            }
+        }
+    })
+    let data = JSON.parse(localStorage.getItem(BOOKS_KEY));
+    if (data !== null) {
+        books = data;
+    }
+    document.dispatchEvent(new Event("onjsonfetched"));
 });
 
-const test = (judul = null) => {
-    var data = [];
-    for (var key in localStorage){
-        if (Array.isArray(JSON.parse(window.localStorage.getItem(key)))) {
-            data.push(JSON.parse(window.localStorage.getItem(key)));
+document.addEventListener("onjsonfetched", function () {
+    for (book of books) {
+        const newBook = createBook(book.id, book.title, book.author, book.year, book.isComplete);
+
+        if (book.isComplete) {
+            document.getElementById(COMPLETE_BOOK).append(newBook);
+        } else {
+            document.getElementById(INCOMPLETE_BOOK).append(newBook);
         }
-     }
-     data.forEach(element => {
-         element.forEach(row => {
-             if (row['judul'] == judul) {
-                 if (row['status'] == 'false') {
-                    var html;
-                    html = '<article class="book_item" id="itemContent'+row['id']+'">'
-                    html += '<h3 id="bookTitle'+row['id']+'">'+row['judul']+'</h3>'
-                    html += '<p>Penulis: <span id="textPenulis'+row['id']+'">'+row['penulis']+'</span></p>'
-                    html += '<p>Tahun: <span id="textTahun'+row['id']+'">'+row['tahun']+'</span></p>'
-                    html += '<input type="hidden" id="check'+row['id']+'" value="'+row['check']+'"></div>'
-                    html += '<div class="action">'
-                    html += '<button class="red" onclick="destroy('+row['id']+')">Hapus buku</button>'
-                    html += '<button class="green" onclick="done('+row['id']+')">Selesai dibaca</button>'
-                    html += '</div>'
-                    html += '</article>'
-                
-                    document.getElementById('incompleteBookshelfList').insertAdjacentHTML("afterend", html)
-                } else {
-                     var html;
-                     html = '<article class="book_item" id="itemContent'+row['id']+'">'
-                     html += '<h3 id="bookTitle'+row['id']+'">'+row['judul']+'</h3>'
-                     html += '<p>Penulis: <span id="textPenulis'+row['id']+'">'+row['penulis']+'</span></p>'
-                     html += '<p>Tahun: <span id="textTahun'+row['id']+'">'+row['tahun']+'</span></p>'
-                     html += '<input type="hidden" id="check'+row['id']+'" value="'+row['check']+'"></div>'
-                     html += '<div class="action">'
-                     html += '<button class="red" onclick="destroy('+row['id']+')">Hapus buku</button>'
-                     html += '<button class="green" onclick="rollback('+row['id']+')">Rollback</button>'
-                     html += '</div>'
-                     html += '</article>'
-                 
-                     document.getElementById('completeBookshelfList').insertAdjacentHTML("afterend", html)
-                 }
-             } else {
-                if (row['status'] == 'false') {
-                    var html;
-                    html = '<article class="book_item" id="itemContent'+row['id']+'">'
-                    html += '<h3 id="bookTitle'+row['id']+'">'+row['judul']+'</h3>'
-                    html += '<p>Penulis: <span id="textPenulis'+row['id']+'">'+row['penulis']+'</span></p>'
-                    html += '<p>Tahun: <span id="textTahun'+row['id']+'">'+row['tahun']+'</span></p>'
-                    html += '<input type="hidden" id="check'+row['id']+'" value="'+row['check']+'"></div>'
-                    html += '<div class="action">'
-                    html += '<button class="red" onclick="destroy('+row['id']+')">Hapus buku</button>'
-                    html += '<button class="green" onclick="done('+row['id']+')">Selesai dibaca</button>'
-                    html += '</div>'
-                    html += '</article>'
-                
-                    document.getElementById('incompleteBookshelfList').insertAdjacentHTML("afterend", html)
-                } else {
-                     var html;
-                     html = '<article class="book_item" id="itemContent'+row['id']+'">'
-                     html += '<h3 id="bookTitle'+row['id']+'">'+row['judul']+'</h3>'
-                     html += '<p>Penulis: <span id="textPenulis'+row['id']+'">'+row['penulis']+'</span></p>'
-                     html += '<p>Tahun: <span id="textTahun'+row['id']+'">'+row['tahun']+'</span></p>'
-                     html += '<input type="hidden" id="check'+row['id']+'" value="'+row['check']+'"></div>'
-                     html += '<div class="action">'
-                     html += '<button class="red" onclick="destroy('+row['id']+')">Hapus buku</button>'
-                     html += '<button class="green" onclick="rollback('+row['id']+')">Rollback</button>'
-                     html += '</div>'
-                     html += '</article>'
-                 
-                     document.getElementById('completeBookshelfList').insertAdjacentHTML("afterend", html)
-                 }
-             }
-         })
-     });
-}
-
-document.getElementById('searchBookTitle').addEventListener("keypress", function(e) {
-    if (e.key === 'Enter') {
-        document.getElementById('searchSubmit').click();
-        e.preventDefault();
-      }
-})
-
-document.getElementById('searchSubmit').addEventListener("click", function() {
-    test(document.getElementById('searchBookTitle').value);
-    
-})
-
-document.getElementById('bookSubmit').addEventListener("click", function() {
-    var judul = document.getElementById('judul');
-    var penulis = document.getElementById('penulis');
-    var tahun = document.getElementById('tahun');
-    if (judul.value == '') {
-        alert("Judul harus di isi");
-        return false;
     }
-    if (penulis.value == '') {
-        alert("Penulis harus di isi");
-        return false;
-    }
-    if (tahun.value == '') {
-        alert("Tahun harus di isi");
-        return false;
-    }
-    var inputBookIsComplete = document.getElementById('inputBookIsComplete');
-    var key = new Date().getTime();
-    var array = [];
-    var html;
-    html = '<article class="book_item" id="itemContent'+key+'">';
-    html += '<h3 id="bookTitle'+key+'"></h3>';
-    html += '<p>Penulis: <span id="textPenulis'+key+'"></span></p>';
-    html += '<p>Tahun: <span id="textTahun'+key+'"></span></p>';
-    html += '<input type="hidden" id="check'+key+'"></div>';
-    html += '<div class="action">';
-    html += '<button class="red" onclick="destroy('+key+')">Hapus buku</button>';
-    if (inputBookIsComplete.checked) {
-        html += '<button class="green" onclick="rollback('+key+')">Rollback</button>';
+});
+
+const addBook = () => {
+    const idBook = new Date().getTime();
+    const formInputJudul = document.getElementById("formInputJudul").value;
+    const formInputAuthorBook = document.getElementById("formInputAuthorBook").value;
+    const formInputYearBook = document.getElementById("formInputYearBook").value;
+    const formInputIsDone = document.getElementById("formInputIsDone").checked;
+    const book = createBook(idBook, formInputJudul, formInputAuthorBook, formInputYearBook, formInputIsDone);
+    const bookArray = converArray(idBook, formInputJudul, formInputAuthorBook, formInputYearBook, formInputIsDone);
+
+    books.push(bookArray);
+    if (formInputIsDone) {
+        document.getElementById(COMPLETE_BOOK).append(book);
     } else {
-        html += '<button class="green" onclick="done('+key+')">Selesai dibaca</button>';
+        document.getElementById(INCOMPLETE_BOOK).append(book);
     }
-    html += '</div>';
-    html += '</article>';
-    if (inputBookIsComplete.checked) {
-        document.getElementById('completeBookshelfList').insertAdjacentHTML("afterend", html);
-        document.getElementById('completeBookshelfList').style.display = 'block';
-        document.getElementById('bookTitle'+key).innerHTML = judul.value;
-        document.getElementById('textPenulis'+key).innerHTML = penulis.value;
-        document.getElementById('textTahun'+key).innerHTML = tahun.value;
-        document.getElementById('check'+key).value = inputBookIsComplete.checked;
-        array.push({
-            'id': key,
-            'judul': judul.value,
-            'penulis': penulis.value,
-            'tahun': tahun.value,
-            'check': inputBookIsComplete.checked,
-            'status': 'done'
-        })
-        window.localStorage.setItem(key, JSON.stringify(array))
-        reset()
+    localStorage.setItem(BOOKS_KEY, JSON.stringify(books));
+}
+
+const createBook = (idBook, formInputJudul, formInputAuthorBook, formInputYearBook, formInputIsDone) => {
+    const book = document.createElement('div');
+    book.setAttribute('id', idBook);
+    book.classList.add('card', 'my-3');
+
+    const bookTitle = document.createElement('h5');
+    bookTitle.classList.add('text-truncate', 'judul');
+    bookTitle.style.maxWidth = "200px";
+    bookTitle.innerText = formInputJudul;
+
+    const bookAuthor = document.createElement('span');
+    bookAuthor.classList.add('text-truncate', 'judul');
+    bookAuthor.style.maxWidth = "200px";
+    bookAuthor.innerText = formInputAuthorBook;
+
+    const bookYear = document.createElement('span');
+    bookAuthor.classList.add('text-truncate', 'judul');
+    bookYear.innerText = formInputYearBook;
+
+    const br = document.createElement("br");
+
+    const card = document.createElement('div');
+    const cardContainer = document.createElement("div");
+    cardContainer.classList.add("card-body", "border-start", "border-4", "border-info", "d-flex", "justify-content-between");
+
+    const cardContent = document.createElement("div");
+    cardContent.classList.add("card-content");
+
+    const cardAction = addAction(formInputIsDone, idBook);
+
+    cardContent.append(bookTitle, bookAuthor, br, bookYear);
+    cardContainer.append(cardContent);
+    cardContainer.append(cardAction);
+    book.append(cardContainer);
+
+    return book;
+}
+
+const addAction = (formInputIsDone, idBook) => {
+    const cardAction = document.createElement('div')
+    const actionDeletes = actionDelete(idBook); 
+    const actionChecks = actionCheck(idBook); 
+    const actionRollbacks = actionRollback(idBook); 
+
+    cardAction.append(actionDeletes);
+    if (formInputIsDone) {
+        cardAction.append(actionRollbacks);
     } else {
-        document.getElementById('incompleteBookshelfList').insertAdjacentHTML("afterend", html);
-        document.getElementById('incompleteBookshelfList').style.display = 'block';
-        document.getElementById('bookTitle'+key).innerHTML = judul.value;
-        document.getElementById('textPenulis'+key).innerHTML = penulis.value;
-        document.getElementById('textTahun'+key).innerHTML = tahun.value;
-        document.getElementById('check'+key).value = inputBookIsComplete.checked;
-        array.push({
-            'id': key,
-            'judul': judul.value,
-            'penulis': penulis.value,
-            'tahun': tahun.value,
-            'check': inputBookIsComplete.checked,
-            'status': 'false'
-        })
-        window.localStorage.setItem(key, JSON.stringify(array))
-        reset();
+        cardAction.append(actionChecks);
     }
-})
-
- function reset() {
-    document.getElementById('judul').value = '';
-    document.getElementById('penulis').value = '';
-    document.getElementById('tahun').value = '';
-    document.getElementById('inputBookIsComplete').checked = false;
+    return cardAction;
 }
 
-function done(id) {
-    var array = [];
-    var judul = document.getElementById('bookTitle'+id);
-    var penulis = document.getElementById('textPenulis'+id);
-    var tahun = document.getElementById('textTahun'+id);
-    var check = document.getElementById('check'+id).checked = true;
-    array.push({
-        'id': id,
-        'judul': judul.innerHTML,
-        'penulis': penulis.innerHTML,
-        'tahun': tahun.innerHTML,
-        'check': check,
-        'status': 'done'
+const actionDelete = (idBook) => {
+    const actionDelete = document.createElement('button');
+    actionDelete.classList.add('btn', 'btn-outline-danger', 'btn-sm');
+    actionDelete.innerHTML = '<i class="bi bi-x"></i>';
+    actionDelete.type = 'button';
+
+    actionDelete.addEventListener('click', function() {
+        let confirmation = confirm('Apakah anda yakin ingin mengahapus data ini ?');
+        if (confirmation) {
+            const card = document.getElementById(idBook);
+            card.addEventListener("eventDelete", function (event) {
+                event.target.remove();
+            });
+            card.dispatchEvent(new Event("eventDelete"));
+            
+            for (let arrayPosition = 0; arrayPosition < books.length; arrayPosition++) {
+                if (books[arrayPosition].id == idBook) {
+                    books.splice(arrayPosition, 1);
+                    break;
+                }
+            }
+            localStorage.setItem(BOOKS_KEY, JSON.stringify(books));
+        }
+    });
+    return actionDelete;
+}
+
+const actionRollback = (idBook) => {
+    const actionRollback = document.createElement('button');
+    actionRollback.classList.add('btn', 'btn-outline-warning', 'btn-sm');
+    actionRollback.innerHTML = '<i class="bi bi-arrow-counterclockwise"></i>';
+    actionRollback.type = 'button';
+
+    actionRollback.addEventListener('click', function() {
+        const card = document.getElementById(idBook);
+        const bookTitle = card.querySelector(".card-content > h5").innerText;
+        const bookAuthor = card.querySelectorAll(".card-content > span")[0].innerText;
+        const bookYear = card.querySelectorAll(".card-content > span")[0].innerText;
+        card.remove();
+        const book = createBook(idBook, bookTitle, bookAuthor, bookYear, false);
+        document.getElementById(INCOMPLETE_BOOK).append(book);
+
+        for (let arrayPosition = 0; arrayPosition < books.length; arrayPosition++) {
+            if (books[arrayPosition].id == idBook) {
+                books.splice(arrayPosition, 1);
+                break;
+            }
+        }
+        books.push(converArray(idBook, bookTitle, bookAuthor, bookYear, false))
+        localStorage.setItem(BOOKS_KEY, JSON.stringify(books));
+    });
+    return actionRollback;
+}
+
+const actionCheck = (idBook) => {
+    const action = document.createElement("button");
+    action.classList.add("btn", "btn-sm", "btn-outline-primary");
+    action.innerHTML = '<i class="bi bi-check"></i>';
+
+    action.addEventListener("click", function () {
+        const card = document.getElementById(idBook);
+        const bookTitle = card.querySelector(".card-content > h5").innerText;
+        const bookAuthor = card.querySelectorAll(".card-content > span")[0].innerText;
+        const bookYear = card.querySelectorAll(".card-content > span")[0].innerText;
+        card.remove();
+        const book = createBook(idBook, bookTitle, bookAuthor, bookYear, true);
+        document.getElementById(COMPLETE_BOOK).append(book);
+
+        for (let arrayPosition = 0; arrayPosition < books.length; arrayPosition++) {
+            if (books[arrayPosition].id == idBook) {
+                books.splice(arrayPosition, 1);
+                break;
+            }
+        }
+        books.push(converArray(idBook, bookTitle, bookAuthor, bookYear, true))
+        localStorage.setItem(BOOKS_KEY, JSON.stringify(books));
     })
-    window.localStorage.setItem(id, JSON.stringify(array))
-    var html;
-    html = '<article class="book_item" id="itemContent'+id+'">'
-    html += '<h3 id="bookTitle'+id+'">'+judul.innerHTML+'</h3>'
-    html += '<p>Penulis: <span id="textPenulis'+id+'">'+penulis.innerHTML+'</span></p>'
-    html += '<p>Tahun: <span id="textTahun'+id+'">'+tahun.innerHTML+'</span></p>'
-    html += '<input type="hidden" id="check'+id+'" value="'+check.checked+'"></div>'
-    html += '<div class="action">'
-    html += '<button class="red" onclick="destroy('+id+')">Hapus buku</button>'
-    html += '<button class="green" onclick="rollback('+id+')">Rollback</button>'
-    html += '</div>'
-    html += '</article>'
-    document.getElementById('itemContent'+id).remove();
-    document.getElementById('completeBookshelfList').insertAdjacentHTML("afterend", html)
+
+    return action;
 }
 
-function rollback(id) {
-    window.localStorage.removeItem(id)
-    var array = [];
-    var judul = document.getElementById('bookTitle'+id);
-    var penulis = document.getElementById('textPenulis'+id);
-    var tahun = document.getElementById('textTahun'+id);
-    var check = document.getElementById('check'+id).checked = true;
-    array.push({
-        'id': id,
-        'judul': judul.innerHTML,
-        'penulis': penulis.innerHTML,
-        'tahun': tahun.innerHTML,
-        'check': check,
-        'status': 'false'
-    })
-    window.localStorage.setItem(id, JSON.stringify(array))
-    var html;
-    html = '<article class="book_item" id="itemContent'+id+'">'
-    html += '<h3 id="bookTitle'+id+'">'+judul.innerHTML+'</h3>'
-    html += '<p>Penulis: <span id="textPenulis'+id+'">'+penulis.innerHTML+'</span></p>'
-    html += '<p>Tahun: <span id="textTahun'+id+'">'+tahun.innerHTML+'</span></p>'
-    html += '<input type="hidden" id="check'+id+'" value="'+check.checked+'"></div>'
-    html += '<div class="action">'
-    html += '<button class="red" onclick="destroy('+id+')">Hapus buku</button>'
-    html += '<button class="green" onclick="done('+id+')">Selesai dibaca</button>'
-    html += '</div>'
-    html += '</article>'
-
-    document.getElementById('itemContent'+id).remove();
-    document.getElementById('incompleteBookshelfList').insertAdjacentHTML("afterend", html)
-}
-
-function destroy(id) {
-    var message = confirm("Apakah anda yakin ingin mengahapus data ini?");
-    if (message == true) {
-        window.localStorage.removeItem(id)
-        document.getElementById('itemContent'+id).remove();
-    }
+function converArray(id, title, author, year, isComplete) {
+    return {
+        id, title, author, year, isComplete,
+    };
 }

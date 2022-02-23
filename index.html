@@ -1,79 +1,82 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Bookshelf Apps</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="bootstrap 4/css/bootstrap.min.css"> -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Poppins&display=swap');
+
+        body {
+            font-family: 'Poppins';
+        }
+    </style>
 </head>
+
 <body>
-<header class="head_bar">
-    <h1 class="head_bar__title">Bookshelf Apps</h1>
-</header>
-<main>
-    <section class="input_section">
-        <h2>Masukkan Buku Baru</h2>
-        <form id="inputBook">
-            <div class="input">
-                <label for="judul">Judul</label>
-                <input type="text" id="judul" required>
+    <div class="container my-5">
+        <div class="card shadow p-3 mb-5 bg-white rounded">
+            <div class="card-header bg-white">
+                <h4>Bookshelf Apps</h4>
             </div>
-            <div class="input">
-                <label for="penulis">Penulis</label>
-                <input type="text" id="penulis" required>
-            </div>
-            <div class="input">
-                <label for="tahun">Tahun</label>
-                <input type="number" id="tahun" required>
-            </div>
-            <div class="input_inline">
-                <label for="inputBookIsComplete">Selesai dibaca</label>
-                <input id="inputBookIsComplete" type="checkbox">
-            </div>
-            <button id="bookSubmit" type="button">Masukkan Buku ke rak <span>Belum selesai dibaca</span></button>
-        </form>
-    </section>
-
-    <section class="search_section">
-        <h2>Cari Buku (Opsional)</h2>
-        <form id="searchBook">
-            <label for="searchBookTitle">Judul</label>
-            <input id="searchBookTitle" type="text">
-            <button id="searchSubmit" type="button">Cari</button>
-        </form>
-    </section>
-
-    <section class="book_shelf">
-        <h2>Belum selesai dibaca</h2>
-
-        <div id="incompleteBookshelfList" class="book_list" style="display: none;">
-        </div>
-    </section>
-
-    <section class="book_shelf">
-        <h2>Selesai dibaca</h2>
-
-        <div id="completeBookshelfList" class="book_list" style="display: none;">
-            <!-- <article class="book_item">
-                <h3 id="bookTitleDone"></h3>
-                <p>Penulis: <span id="textPenulisDone"></span></p>
-                <p>Tahun: <span id="textTahunDone"></span></p>
-
-                <div class="action">
-                    <button class="green">Selesai dibaca</button>
-                    <button class="red">Hapus buku</button>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <form action="" id="formAddBook">
+                            <h4 class="card-title text-center">Tambah Buku</h4>
+                            <div class="form-group mt-4">
+                                <label for="formInputBookName">Judul</label>
+                                <input type="text" name="" id="formInputJudul" class="form-control" required>
+                            </div>
+                            <div class="form-group mt-4">
+                                <label for="formInputAuthorBook">Penulis</label>
+                                <input type="text" name="" id="formInputAuthorBook" class="form-control" required>
+                            </div>
+                            <div class="form-group mt-4">
+                                <label for="formInputYearBook">Tahun</label>
+                                <input type="number" name="" id="formInputYearBook" class="form-control" required>
+                            </div>
+                            <div class="form-group mt-4">
+                                <input type="checkbox" name="" id="formInputIsDone" class="form-check-input">
+                                <label for="formInputIsDone" class="form-check-label">Selesai dibaca</label>
+                            </div>
+                            <div class="form-group mt-4">
+                                <button type="submit" class="btn btn-primary form-control" id="buttonAddBook">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-6">
+                        <form action="" id="formSearch">
+                            <h4 class="card-title text-center">Cari Buku</h4>
+                            <div class="form-group mt-4">
+                                <label for="formInputSearch">Judul</label>
+                                <div class="input-group">
+                                    <input type="text" name="" id="formInputSearch" class="form-control">
+                                    <button type="submit" class="btn btn-primary" id="buttonSearch"><i class="bi bi-search"></i></button>
+                                </div>
+                            </div>
+                            <div class="form-group mt-5">
+                                <h4 class="border-bottom border-info">Belum Selesai dibaca</h4>
+                                <div id="unreadBook"></div>
+                            </div>
+                            <div class="form-group mt-5">
+                                <h4 class="border-bottom border-info">Selesai dibaca</h4>
+                                <div id="readedBook"></div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </article> -->
+            </div>
         </div>
-    </section>
-</main>
-
-<!-- <script src="/bootstrap 4/js/bootstrap.min.js"></script> -->
-<script src="js/script.js"></script>
+    </div>
+    <script src="bootstrap/js/bootstrrap.min.js"></script>
+    <script src="js/script.js"></script>
+    <!-- <script src="js/storage.js"></script>
+    <script src="js/dom.js"></script> -->
 </body>
 </html>
