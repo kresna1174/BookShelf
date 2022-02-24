@@ -111,7 +111,7 @@ const addAction = (formInputIsDone, idBook) => {
     const cardAction = document.createElement('div')
     const actionDeletes = actionDelete(idBook); 
     const actionChecks = actionCheck(idBook); 
-    const actionRollbacks = actionRollback(idBook); 
+    const actionRollbacks = actionRollback(idBook);
 
     cardAction.append(actionDeletes);
     if (formInputIsDone) {
@@ -125,7 +125,7 @@ const addAction = (formInputIsDone, idBook) => {
 const actionDelete = (idBook) => {
     const actionDelete = document.createElement('button');
     actionDelete.classList.add('btn', 'btn-outline-danger', 'btn-sm');
-    actionDelete.innerHTML = '<i class="bi bi-x"></i>';
+    actionDelete.innerHTML = 'remove';
     actionDelete.type = 'button';
 
     actionDelete.addEventListener('click', function() {
@@ -152,8 +152,9 @@ const actionDelete = (idBook) => {
 const actionRollback = (idBook) => {
     const actionRollback = document.createElement('button');
     actionRollback.classList.add('btn', 'btn-outline-warning', 'btn-sm');
-    actionRollback.innerHTML = '<i class="bi bi-arrow-counterclockwise"></i>';
+    actionRollback.innerHTML = 'rollback';
     actionRollback.type = 'button';
+    actionRollback.style.marginLeft = "10px";
 
     actionRollback.addEventListener('click', function() {
         const card = document.getElementById(idBook);
@@ -177,11 +178,12 @@ const actionRollback = (idBook) => {
 }
 
 const actionCheck = (idBook) => {
-    const action = document.createElement("button");
-    action.classList.add("btn", "btn-sm", "btn-outline-primary");
-    action.innerHTML = '<i class="bi bi-check"></i>';
+    const actionCheck = document.createElement("button");
+    actionCheck.classList.add("btn", "btn-sm", "btn-outline-success");
+    actionCheck.innerHTML = 'approve';
+    actionCheck.style.marginLeft = "10px";
 
-    action.addEventListener("click", function () {
+    actionCheck.addEventListener("click", function () {
         const card = document.getElementById(idBook);
         const bookTitle = card.querySelector(".card-content > h5").innerText;
         const bookAuthor = card.querySelectorAll(".card-content > span")[0].innerText;
@@ -200,7 +202,7 @@ const actionCheck = (idBook) => {
         localStorage.setItem(BOOKS_KEY, JSON.stringify(books));
     })
 
-    return action;
+    return actionCheck;
 }
 
 function converArray(id, title, author, year, isComplete) {
